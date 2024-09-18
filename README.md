@@ -57,7 +57,7 @@ env
 1. Clone the repository:
 
    ```
-   git clone https://github.com/leionion/rune-airdrop-backend.git
+   git clone git clone https://github.com/leionion/rune-airdrop-backend.git
    cd rune-airdrop-backend
    ```
 
