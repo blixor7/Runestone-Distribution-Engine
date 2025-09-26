@@ -1,179 +1,90 @@
----
 
-# Mystic Runestone Airdrop Tool Backend
+# Runestone Distribution Engine
 
-## Overview
+A robust backend system built with Node.js and Express for handling Rune token airdrops with support for both same-amount and different-amount distributions.
 
-The Runestone Airdrop Backend is a server application that facilitates the airdrop of Runestone tokens. The backend is developed using Node.js and Express.js and includes API endpoints for various functionalities such as redeeming fees, estimating transaction fees, and managing different amounts for airdrops. The project also integrates Swagger UI for API documentation.
+## Technical Overview
+
+This server application provides API endpoints for executing and estimating Rune token airdrop transactions. The system includes fee calculation, transaction estimation, and support for large-scale distributions with built-in rate limiting and comprehensive documentation.
 
 ## Project Structure
 
 ```
 root/
-├── config/
-│   └── config.ts
-├── routes
-│   └── AirdropRoute
-│        ├── different-amount.route.ts
-│        ├── large-different-amount.route.ts
-│        ├── large-different-amount-airdrop.route.ts
-│        ├── same-amount.route.ts
-│   └── EstimateRoute
-│        ├── different-amount-estimate.route.ts
-│        ├── same-amount-estimate.route.ts
-│   └── SubRoute
-│        └── runestone-fee.route.ts
-├── service/
-│   └── psbt/
-│       ├── CreateAirdropRunestonePsbt.ts
-│       ├── redeemRunestoneAmountRunestone.ts
-│       ├── redeemRunestoneSameAmount.ts
-│       ├── RuneOne.ts
-│       ├── RuneSub.ts
-│       └── SameAmountEstimate.ts
-├── test/
-│   ├── CreateTest.ts
-│   ├── freeTierAirdrop.ts
-│   ├── matchTests.ts
-│   └── MWtests.ts
-├── utils/
-│   ├── blockcypher.api.ts
-│   ├── mempool.api.ts
-│   ├── TS
-│   │   ├── mw.ts
-│   │   └── TsUtils.ts
-│   └── unisat.api.ts
-├── .env.example
-├── package.json
-├── README.md
-├── swagger.yaml
-├── tsconfig.json
-└── yarn.lock
-env
+├── config/                 # Configuration settings
+├── routes/                 # API route handlers
+│   ├── AirdropRoute/       # Airdrop distribution endpoints
+│   ├── EstimateRoute/      # Transaction estimation endpoints
+│   └── SubRoute/           # Additional utility endpoints
+├── service/psbt/           # PSBT transaction services
+├── test/                   # Test suites
+├── utils/                  # Utility functions and API clients
+│   ├── blockcypher.api.ts  # Blockchain data provider
+│   ├── mempool.api.ts      # Mempool integration
+│   └── unisat.api.ts       # Unisat API integration
+├── swagger.yaml            # API documentation
+└── configuration files
 ```
 
-## Installation
+## Installation & Setup
 
-1. Clone the repository:
+1. **Clone the repository:**
+```bash
+git clone https://github.com/blixor7/rune-airdrop-backend.git
+cd rune-airdrop-backend
+```
 
-   ```
-   git clone git clone https://github.com/leionion/rune-airdrop-backend.git
-   cd rune-airdrop-backend
-   ```
+2. **Install dependencies:**
+```bash
+yarn install
+```
 
-2. Install dependencies:
+3. **Configure environment:**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+PORT=your-port
+```
 
-   ```
-   yarn install
-   ```
+4. **Start the server:**
+```bash
+yarn dev
+```
 
-3. Create a `.env` file:
+## API Documentation
 
-   ```
-   cp .env.example .env
-   ```
+Interactive API documentation is available via Swagger UI at `/api-docs` when the server is running.
 
-4. Configure the environment variables in `.env` file:
-   ```
-   PORT=your-port
-   ```
+## Core Endpoints
 
-## Usage
+### Airdrop Distribution
+- `POST /api/same-amount` - Distribute equal amounts to multiple addresses
+- `POST /api/different-amount` - Distribute custom amounts to addresses
+- `POST /api/large-different-amount` - Handle large-scale distributions
 
-1. Start the server:
+### Transaction Estimation
+- `POST /api/estimate/same-amount` - Estimate fees for same-amount airdrops
+- `POST /api/estimate/different-amount` - Estimate fees for custom distributions
 
-   ```
-   yarn dev
-   ```
+### Utility Endpoints
+- `GET /api/runestone-fee` - Calculate transaction fees
+- `GET /` - Health check endpoint
 
-2. The server should be running on the specified port. You can visit `http://localhost:[PORT]` to check if the server is up and running.
+## Features
 
-3. Access the API documentation via Swagger UI at `http://localhost:[PORT]/api-docs`.
+- **PSBT Transaction Handling** - Secure transaction creation and signing
+- **Rate Limiting** - Mutex-based API protection
+- **Multiple Blockchain APIs** - Integration with BlockCypher, Mempool, and Unisat
+- **Comprehensive Testing** - Test suites for critical functionality
+- **Swagger Documentation** - Interactive API documentation
 
-## API Endpoints
+## Security & Performance
 
-Here are some key API endpoints provided by the backend:
+- CORS enabled for cross-origin requests
+- JSON body parsing with express.json
+- Global wallet management with iterator tracking
+- Error handling with appropriate HTTP status codes
 
-- **GET /**: Check if the backend server is running.
-- **POST /api/redeem-fee**: Redeem Runestone fees.
-- **POST /api/same-amount**: Handle airdrops with the same amount.
-- **POST /api/different-amount**: Handle airdrops with different amounts.
-- **POST /api/large-different-amount**: Handle large different amount airdrops.
-- **POST /api/large-different-amount-airdrop**: Handle large airdrop transactions with different amounts.
-- **POST /api/estimate/same-amount**: Estimate transaction fee for same amount airdrop.
-- **POST /api/estimate/different-amount**: Estimate transaction fee for different amount airdrop.
+## Development
 
-## Middleware
-
-- **CORS**: Cross-Origin Resource Sharing is enabled using the `cors` package.
-- **Body-Parser**: JSON and URL-encoded data parsing with `body-parser` and `express.json`.
-
-## Swagger
-
-Swagger UI is integrated to provide interactive API documentation. The `swagger.yaml` file is required to configure API documentation, which can be accessed at `/api-docs`.
-
-## Mutex
-
-Mutex from `async-mutex` is used for API rate limit protection functionality.
-
-## Global Variables
-
-- `app.locals.walletIndex`: Global iterator for wallet management.
-- `app.locals.iterator`: Global iterator for unisat API distribution.
-
-## Swagger Usage
-
-### Base URL
-
-The base URL for the API is:
-
-- Development: `http://localhost:5000/api`
-- Production: `https://rune-airdrop-backend.onrender.com/api`
-
-### Endpoints
-
-#### Different Amount Rune Airdrop
-
-- **Description:** Transfer different amounts of Rune tokens to different addresses
-- **Endpoint:** `/different-amount`
-- **HTTP Method:** POST
-
-#### Large Different Amount Rune Airdrop
-
-- **Description:** Transfer different amounts of Rune tokens to different addresses (for a large number of addresses)
-- **Endpoint:** `/large-different-amount`
-- **HTTP Method:** POST
-
-#### Large Different Amount Rune Airdrop (Execute)
-
-- **Description:** Execute the large different amount Rune Airdrop with a pre-generated transaction ID
-- **Endpoint:** `/large-different-amount-airdrop`
-- **HTTP Method:** POST
-
-#### Same Amount Rune Airdrop
-
-- **Description:** Transfer the same amount of Rune tokens to different addresses
-- **Endpoint:** `/same-amount`
-- **HTTP Method:** POST
-
-#### Calculate Runestone Transaction Fee
-
-- **Description:** Calculate the fee for a runestone transaction
-- **Endpoint:** `/runestone-fee`
-- **HTTP Method:** GET
-
-#### Estimate Different Amount Rune Airdrop
-
-- **Description:** Estimate the different amount Rune Airdrop
-- **Endpoint:** `/estimate/different-amount`
-- **HTTP Method:** POST
-
-#### Estimate Same Amount Rune Airdrop
-
-- **Description:** Estimate the same amount Rune Airdrop
-- **Endpoint:** `/estimate/same-amount`
-- **HTTP Method:** POST
-
-### Error Handling
-
-In case of errors, the API responds with appropriate HTTP status codes along with error messages in the response body.
+The project uses TypeScript for type safety and includes extensive test coverage. Contributions are welcome through the issue tracker and pull requests.
